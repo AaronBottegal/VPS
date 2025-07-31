@@ -19,7 +19,7 @@ public:
     VPS(QWidget *parent = nullptr);
     ~VPS();
     //Our internal crap.
-    void OBS_Create_New_Scene(QString name);
+    void OBS_Create_New_Scene();
 
 public slots:
     void onConnected();

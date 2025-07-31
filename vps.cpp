@@ -116,10 +116,8 @@ void VPS::process_websock_data(QJsonDocument &doc)
         salt_utf8 = salt.toUtf8();
         challenge_utf8 = challenge.toUtf8();
 
-        /*
         qDebug() << "Hashing data points: " << ui->obs_pw->text().toUtf8()
                  << "Salt: " << salt.toUtf8() << "Challenge: " << challenge.toUtf8();
-        */
 
         hash_data.append(ui->obs_pw->text().toUtf8());
         hash_data.append(salt_utf8);
@@ -303,9 +301,12 @@ void VPS::on_BTN_Connect_clicked()
 }
 
 QString NEW_SCENE_ID;
+quint32 scene_id = 0;
 
-void VPS::OBS_Create_New_Scene(QString name)
+void VPS::OBS_Create_New_Scene()
 {
+    scene_id++;
+    QString name = QString("VPS Scene %1").arg(scene_id); //Do name manually.
     //Create packet here.
     QJsonDocument auth_doc;
     QJsonObject obj_root;
@@ -330,6 +331,7 @@ void VPS::OBS_Create_New_Scene(QString name)
 
     //Send it!
     obs.sendTextMessage(packet); //Send the data.
+    obs.flush();
 
     //Create packet here.
     obj_root.empty();
@@ -340,7 +342,7 @@ void VPS::OBS_Create_New_Scene(QString name)
     obj_data["requestType"] = "CreateSceneItem";
     obj_data["requestId"] = "ADDCAMBG";
     request_data["sourceName"] = "Blue";
-    request_data["sceneName"] = "VPS Next"; //Adding to next (creating)
+    request_data["sceneName"] = name; //Adding to next (creating)
 
     if (!request_data.isEmpty())
         obj_data["requestData"] = request_data; //Add if not empty.
@@ -355,6 +357,7 @@ void VPS::OBS_Create_New_Scene(QString name)
 
     //Send it!
     obs.sendTextMessage(packet); //Send the data.
+    obs.flush();
 
     //Create packet here.
     obj_root.empty();
@@ -365,7 +368,7 @@ void VPS::OBS_Create_New_Scene(QString name)
     obj_data["requestType"] = "CreateSceneItem";
     obj_data["requestId"] = "ADDCAMERA";
     request_data["sourceName"] = "Camera A";
-    request_data["sceneName"] = "VPS Next"; //Adding to next (creating)
+    request_data["sceneName"] = name; //Adding to next (creating)
 
     if (!request_data.isEmpty())
         obj_data["requestData"] = request_data; //Add if not empty.
@@ -380,6 +383,7 @@ void VPS::OBS_Create_New_Scene(QString name)
 
     //Send it!
     obs.sendTextMessage(packet); //Send the data.
+    obs.flush();
 
     //Create packet here.
     obj_root.empty();
@@ -390,7 +394,7 @@ void VPS::OBS_Create_New_Scene(QString name)
     obj_data["requestType"] = "CreateSceneItem";
     obj_data["requestId"] = "ADDSCENEOVERLAY";
     request_data["sourceName"] = "VPS Overlay";
-    request_data["sceneName"] = "VPS Next"; //Adding to next (creating)
+    request_data["sceneName"] = name; //Adding to next (creating)
 
     if (!request_data.isEmpty())
         obj_data["requestData"] = request_data; //Add if not empty.
@@ -405,41 +409,12 @@ void VPS::OBS_Create_New_Scene(QString name)
 
     //Send it!
     obs.sendTextMessage(packet); //Send the data.
-
-    //Create packet here.
-    obj_root.empty();
-    obj_data.empty();
-    request_data.empty();
-
-    //Add data for op d key.
-    obj_data["requestType"] = "CreateSceneItem";
-    obj_data["requestId"] = "ADDSCENEOVERLAY";
-    request_data["sourceName"] = "VPS Overlay";
-    request_data["sceneName"] = "VPS Next"; //Adding to next (creating)
-
-    if (!request_data.isEmpty())
-        obj_data["requestData"] = request_data; //Add if not empty.
-
-    //Now combine to form the document.
-    obj_root["d"] = obj_data; //D key as data object for op packet.
-    obj_root["op"] = 6;       //Set op for request.
-    auth_doc.setObject(obj_root);
-
-    //Make packet from doc.
-    packet = auth_doc.toJson(QJsonDocument::Compact);
-
-    //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-
-    //Create packet here.
-    obj_root.empty();
-    obj_data.empty();
-    request_data.empty();
+    obs.flush();
 
     //Add data for op d key.
     obj_data["requestType"] = "SetCurrentPreviewScene";
     obj_data["requestId"] = "COMMITSCENE";
-    request_data["sceneName"] = "VPS Next";
+    request_data["sceneName"] = name;
 
     if (!request_data.isEmpty())
         obj_data["requestData"] = request_data; //Add if not empty.
@@ -454,6 +429,7 @@ void VPS::OBS_Create_New_Scene(QString name)
 
     //Send it!
     obs.sendTextMessage(packet); //Send the data.
+    obs.flush();                 //Flush it.
 
     //Create packet here.
     obj_root.empty();
@@ -477,12 +453,14 @@ void VPS::OBS_Create_New_Scene(QString name)
 
     //Send it!
     obs.sendTextMessage(packet); //Send the data.
+
+    return;
 }
 
 void VPS::on_BTN_SCENE1_clicked()
 { //Scene 1
     //Create next scene.
-    OBS_Create_New_Scene("VPS Next");
+    OBS_Create_New_Scene();
 }
 
 void VPS::on_BTN_SCENE1_2_clicked() //Scene 2
