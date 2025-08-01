@@ -34,9 +34,11 @@ private slots:
 
     void on_BTN_SCENE1_clicked();
 
-    void on_BTN_SCENE1_2_clicked();
+    void on_BTN_GET_BG_clicked();
 
-    void on_BTN_SCENE1_3_clicked();
+    void on_BTN_OTHER_clicked();
+
+    void makebackground(QJsonObject *obj);
 
 private:
     Ui::VPS *ui;

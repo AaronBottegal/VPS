@@ -167,7 +167,7 @@ void VPS::process_websock_data(QJsonDocument &doc)
         break;
     }
     case 2: {
-        qDebug("AUTH SUCCESS!!!");
+        qDebug("AUTH OK");
         //Shoot off packets for data back.
 
         //Create packet here.
@@ -254,6 +254,10 @@ void VPS::process_websock_data(QJsonDocument &doc)
         break;
     }
     case 7: {
+        if (obj["d"].toObject()["requestStatus"].toObject()["code"].toInt() == 100)
+            qDebug("Code 100!");
+        if (obj["d"].toObject()["requestId"].toString() == "GET_SCENE_ITEMS_INFO")
+            VPS.makebackbackground();
         break;
     };
     case 8: {
@@ -306,13 +310,16 @@ quint32 scene_id = 0;
 void VPS::OBS_Create_New_Scene()
 {
     scene_id++;
-    QString name = QString("VPS Scene %1").arg(scene_id); //Do name manually.
+    //QString name = QString("VPS Scene %1").arg(scene_id); //Do name manually.
+    QString name = "VPS WIP SCENE DYNAMIC";
+
     //Create packet here.
     QJsonDocument auth_doc;
     QJsonObject obj_root;
     QJsonObject obj_data;
     QJsonObject request_data;
 
+    //Delete old scene.
     //Add data for op d key.
     obj_data["requestType"] = "CreateScene";
     obj_data["requestId"] = "CREATENEXTSCENE";
@@ -328,6 +335,31 @@ void VPS::OBS_Create_New_Scene()
 
     //Make packet from doc.
     QString packet = auth_doc.toJson(QJsonDocument::Compact);
+
+    //Send it!
+    obs.sendTextMessage(packet); //Send the data.
+    obs.flush();
+
+    //Create packet here.
+    obj_root.empty();
+    obj_data.empty();
+    request_data.empty();
+
+    //Add data for op d key.
+    obj_data["requestType"] = "CreateScene";
+    obj_data["requestId"] = "CREATENEXTSCENE";
+    request_data["sceneName"] = name;
+
+    if (!request_data.isEmpty())
+        obj_data["requestData"] = request_data; //Add if not empty.
+
+    //Now combine to form the document.
+    obj_root["d"] = obj_data; //D key as data object for op packet.
+    obj_root["op"] = 6;       //Set op for request.
+    auth_doc.setObject(obj_root);
+
+    //Make packet from doc.
+    packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
     obs.sendTextMessage(packet); //Send the data.
@@ -463,8 +495,39 @@ void VPS::on_BTN_SCENE1_clicked()
     OBS_Create_New_Scene();
 }
 
-void VPS::on_BTN_SCENE1_2_clicked() //Scene 2
-{}
+void VPS::on_BTN_GET_BG_clicked()
+{
+    //Create packet here.
+    QJsonDocument auth_doc;
+    QJsonObject obj_root;
+    QJsonObject obj_data;
+    QJsonObject request_data;
 
-void VPS::on_BTN_SCENE1_3_clicked() //Scene SFX
-{}
+    //Delete old scene.
+    //Add data for op d key.
+    obj_data["requestType"] = "GetSceneItemList";
+    obj_data["requestId"] = "GET_SCENE_ITEMS_INFO";
+    request_data["sceneName"] = "VPS Backgrounds";
+
+    if (!request_data.isEmpty())
+        obj_data["requestData"] = request_data; //Add if not empty.
+
+    //Now combine to form the document.
+    obj_root["d"] = obj_data; //D key as data object for op packet.
+    obj_root["op"] = 6;       //Set op for request.
+    auth_doc.setObject(obj_root);
+
+    //Make packet from doc.
+    QString packet = auth_doc.toJson(QJsonDocument::Compact);
+
+    //Send it!
+    obs.sendTextMessage(packet); //Send the data.
+    obs.flush();
+
+    //Create packet here.
+    obj_root.empty();
+    obj_data.empty();
+    request_data.empty();
+}
+
+void VPS::on_BTN_OTHER_clicked() {}

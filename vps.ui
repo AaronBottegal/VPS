@@ -1040,10 +1040,10 @@
          </rect>
         </property>
         <property name="text">
-         <string>SCENE 1</string>
+         <string>CREATE SCENE</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="BTN_SCENE1_2">
+       <widget class="QPushButton" name="BTN_GET_BG">
         <property name="geometry">
          <rect>
           <x>380</x>
@@ -1053,10 +1053,10 @@
          </rect>
         </property>
         <property name="text">
-         <string>SCENE 2</string>
+         <string>GET BG</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="BTN_SCENE1_3">
+       <widget class="QPushButton" name="BTN_OTHER">
         <property name="geometry">
          <rect>
           <x>630</x>
@@ -1066,7 +1066,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>SCENE SFX</string>
+         <string>DO OTHER</string>
         </property>
        </widget>
       </widget>
