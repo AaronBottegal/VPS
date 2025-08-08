@@ -5,10 +5,31 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QWebSocket>
+#include <QDebug>
 #include "ui_vps.h"
 
 QWebSocket obs;
 QFile outfile;
+
+VPS_ScriptChainBase::VPS_ScriptChainBase() {
+    return;
+}
+
+VPS_ScriptChainBase::~VPS_ScriptChainBase() {
+    return;
+}
+
+void VPS_ScriptChainBase::add_reply_data(QJsonObject *obj) {
+    //TODO: Add data to self.
+    return;
+};
+
+void VPS_Script_Testing::process_reply(QJsonObject *reply) { //Virtual function called for replies to step script.
+    //TODO: Add to data.
+    add_reply_data(reply); //Add data we got.
+    //TODO: Process each step for script.
+    return;
+}
 
 VPS::VPS(QWidget *parent)
     : QMainWindow(parent)
@@ -20,6 +41,7 @@ VPS::VPS(QWidget *parent)
     outfile.setFileName("./websocket.txt");
     outfile.open(QIODevice::Append | QIODevice::Text); //Open as text.
 
+    qDebug("Clicking button...");
     on_BTN_Connect_clicked(); //Click button automagically.
 }
 
@@ -67,6 +89,7 @@ void VPS::msgrecv(const QString &msg)
 void VPS::framerecv(const QString &msg, bool fin)
 {
     qDebug() << "MESSAGE FRAME: " << msg;
+    if (fin) return;
     return;
 }
 
@@ -253,11 +276,13 @@ void VPS::process_websock_data(QJsonDocument &doc)
     case 6: {
         break;
     }
-    case 7: {
-        if (obj["d"].toObject()["requestStatus"].toObject()["code"].toInt() == 100)
-            qDebug("Code 100!");
-        if (obj["d"].toObject()["requestId"].toString() == "GET_SCENE_ITEMS_INFO")
-            VPS.makebackbackground();
+    case 7: { //Reply from request.
+        QString object = obj["d"].toObject()["requestId"].toString(); //Get string.
+        //Find virtual function to pass to.
+
+        //Send it to the script runner.
+
+        //Done.
         break;
     };
     case 8: {
@@ -280,18 +305,18 @@ void VPS::on_BTN_Connect_clicked()
         return; //Don't re-connect.
 
     QUrl url;
-    /*
-    url.setHost("10.0.40.70");
-    url.setPort(4455);
-    url.setPassword("helloworld");
-    */
-    url.setUrl("ws://10.0.40.132:4455");
 
-    qDebug("Connect A.");
+    //url.setUrl("ws://10.0.40.132:4455");
+    url.setHost(ui->obs_ip->text()); //Grab IP/Pass/Port from UI.
+    url.setPort(ui->obs_port->text().toInt());
+    url.setPassword(ui->obs_pw->text());
+    url.setScheme("ws"); //We're websocket.
+
+    qDebug("Connect signal for connect/disconnect...");
     connect(&obs, SIGNAL(connected()), this, SLOT(onConnected()));
-    qDebug("Connect B.");
     connect(&obs, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     //connect(&obs, SIGNAL(errorOccured(err)), this, SLOT(onError(err)));
+    qDebug("Connect signal for text receive from obs server...");
     connect(&obs, SIGNAL(textMessageReceived(QString)), this, SLOT(msgrecv(QString)));
     //connect(&obs, SIGNAL(textFrameReceived(QString, bool)), this, SLOT(framerecv(QString, bool)));
 
