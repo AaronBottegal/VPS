@@ -8,28 +8,11 @@
 #include <QDebug>
 #include "ui_vps.h"
 
-QWebSocket obs;
 QFile outfile;
+QWebSocket obs;
+QVector<VPS_ScriptChainBase *> active_scripts;
 
-VPS_ScriptChainBase::VPS_ScriptChainBase() {
-    return;
-}
 
-VPS_ScriptChainBase::~VPS_ScriptChainBase() {
-    return;
-}
-
-void VPS_ScriptChainBase::add_reply_data(QJsonObject *obj) {
-    //TODO: Add data to self.
-    return;
-};
-
-void VPS_Script_Testing::process_reply(QJsonObject *reply) { //Virtual function called for replies to step script.
-    //TODO: Add to data.
-    add_reply_data(reply); //Add data we got.
-    //TODO: Process each step for script.
-    return;
-}
 
 VPS::VPS(QWidget *parent)
     : QMainWindow(parent)
@@ -38,11 +21,11 @@ VPS::VPS(QWidget *parent)
     ui->setupUi(this);
 
     //Other stuff.
-    outfile.setFileName("./websocket.txt");
+    outfile.setFileName("websocket.txt");
     outfile.open(QIODevice::Append | QIODevice::Text); //Open as text.
 
-    qDebug("Clicking button...");
-    on_BTN_Connect_clicked(); //Click button automagically.
+    //qDebug("Clicking button...");
+    //on_BTN_Connect_clicked(); //Click button automagically.
 }
 
 VPS::~VPS()
@@ -52,7 +35,8 @@ VPS::~VPS()
         outfile.flush();
         outfile.close(); //Close file.
     }
-    delete ui;
+
+    delete ui; //Free UI.
 }
 
 void VPS::onConnected()
@@ -81,7 +65,7 @@ void VPS::msgrecv(const QString &msg)
     VPS::process_websock_data(json_data);
 
     QTextStream helper(&outfile); //Set up streamer.
-    helper << msg << "\n\n";      //Output data.
+    helper << msg << "\n\n";      //Output data to it.
 
     return;
 }
@@ -90,6 +74,7 @@ void VPS::framerecv(const QString &msg, bool fin)
 {
     qDebug() << "MESSAGE FRAME: " << msg;
     if (fin) return;
+
     return;
 }
 
@@ -124,8 +109,8 @@ void VPS::process_websock_data(QJsonDocument &doc)
         QString challenge;
         QByteArray salt_utf8;
         QByteArray challenge_utf8;
-        QByteArray salt_hex;
-        QByteArray challenge_hex;
+        //QByteArray salt_hex;
+        //QByteArray challenge_hex;
         QCryptographicHash hash(QCryptographicHash::Sha256);
         QByteArray hash_data;
         QByteArray secret_base64;
@@ -191,13 +176,26 @@ void VPS::process_websock_data(QJsonDocument &doc)
     }
     case 2: {
         qDebug("AUTH OK");
+        //Add script runner for testing.
+        VPS_Script_Testing *script_adding = new VPS_Script_Testing; //Make the script we want ran.
+        script_adding->add_name("AARON_TEST"); //Name it.
+        //Run the script runner.
+        script_adding->process_reply(nullptr); //Process it, no data because first run.
+
+
+
+
+
         //Shoot off packets for data back.
 
         //Create packet here.
+        /*
         QJsonDocument auth_doc;
         QJsonObject obj_root;
         QJsonObject obj_data;
         QJsonObject request_data;
+        */
+
 
         /*
         //Add data for op d key.
@@ -277,10 +275,13 @@ void VPS::process_websock_data(QJsonDocument &doc)
         break;
     }
     case 7: { //Reply from request.
-        QString object = obj["d"].toObject()["requestId"].toString(); //Get string.
+        QString recv_request_name = obj["d"].toObject()["requestId"].toString(); //Get string.
         //Find virtual function to pass to.
 
         //Send it to the script runner.
+        for (const auto &ptr : active_scripts) {
+            if (ptr->script_name_id == recv_request_name) ptr->process_reply(&obj);
+        }
 
         //Done.
         break;
@@ -556,3 +557,55 @@ void VPS::on_BTN_GET_BG_clicked()
 }
 
 void VPS::on_BTN_OTHER_clicked() {}
+
+
+/*
+ *
+ * SCRIPT BASE CLASS.
+ *
+*/
+
+
+VPS_ScriptChainBase::VPS_ScriptChainBase() {
+    //Add to running scripts.
+    this->script_step = 0;  //No steps.
+    active_scripts.push_back(this); //Add self to list.
+    return;
+}
+
+
+VPS_ScriptChainBase::~VPS_ScriptChainBase() {
+    //Remove from running scripts.
+    active_scripts.removeAll(this); //Remove from active scripts.
+    return;
+}
+
+//Generic base class features.
+
+void VPS_ScriptChainBase::add_name(QString str) {
+    this->script_name_id = str; //Copy ref.
+}
+
+void VPS_ScriptChainBase::add_reply_data(QJsonObject &json_data) {
+    //TODO: Add data to self.
+    return;
+};
+
+/*
+ *
+ * SCRIPT RUNNERS / DERIVED CLASSES
+ *
+*/
+
+void VPS_Script_Testing::process_reply(QJsonObject *json_data) { //Virtual function called for replies to step script.
+    if (json_data) add_reply_data(*json_data); //Add data we got.
+    switch(this->script_step) {
+    default:
+        break;
+    case 0:
+        qDebug("We are running the test script fresh.");
+        break;
+    }
+    //TODO: Process each step for script.
+    return;
+}

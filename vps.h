@@ -11,26 +11,34 @@ class VPS;
 }
 QT_END_NAMESPACE
 
+
+
 class VPS_ScriptChainBase {
 public:
     VPS_ScriptChainBase(); //Init.
     ~VPS_ScriptChainBase(); //Destroy.
     //Variables.
     QString script_name_id; //ID Name given to OBS for reply.
-    quint32 script_step; //Step we're at in the function script.
-    QVector<QJsonObject> script_past_data; //Past data packets we processed/requested for reference later.
+    void add_name(QString str);
+    quint32 script_step; //Step we're at in the script process runner.
+    QVector<QJsonObject> script_past_data; //Past data packets we processed/requested for reference later in the script.
     //Virtual function for processing replies.
-    virtual void process_reply(QJsonObject *reply) = 0; //Pure virtual function spec.
+    virtual void process_reply(QJsonObject *json_object) = 0; //Pure virtual function spec.
 protected:
-    //Internal functions.
-    void add_reply_data(QJsonObject *data);
-    //void end_process(void); //We end it.
+    void add_reply_data(QJsonObject &json_object);    //Internal function for adding JSON Data for this script invokation.
 private:
 };
 
+
+
 class VPS_Script_Testing : public VPS_ScriptChainBase {
-    void process_reply(QJsonObject *reply) override; //Script runner we link to.
+public:
+    void process_reply(QJsonObject *json_object) override; //Script runner we link to.
+protected:
+private:
 };
+
+
 
 class VPS : public QMainWindow
 {
