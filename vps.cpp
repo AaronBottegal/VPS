@@ -11,6 +11,7 @@
 QFile outfile;
 QWebSocket obs;
 QVector<VPS_ScriptChainBase *> active_scripts;
+//TODO: Watcher array for re-activating scripts on events.
 
 
 
@@ -528,6 +529,9 @@ void VPS::on_BTN_GET_BG_clicked()
     QJsonObject obj_root;
     QJsonObject obj_data;
     QJsonObject request_data;
+    //JSON Structure for the root node: {op:int,d:obj_data}
+    //JSON Structure for obj_data: {requestType:str,requestId:str,requestData:req_data}
+    //JSON Structure for req_data: {per-command}
 
     //Delete old scene.
     //Add data for op d key.
@@ -588,8 +592,25 @@ void VPS_ScriptChainBase::add_name(QString str) {
 
 void VPS_ScriptChainBase::add_reply_data(QJsonObject &json_data) {
     //TODO: Add data to self.
+    this->script_past_data.push_back(json_data); //Add data to it.
+    //TODO: Get rid of header reply value portion.
     return;
 };
+
+void VPS_ScriptChainBase::set_json_op_id(quint8 val) {
+    this->json_core_op = val;
+    return;
+}
+
+void VPS_ScriptChainBase::set_json_request_type(QString &str) {
+    this->json_core_request_type = str;
+}
+
+
+void VPS_ScriptChainBase::set_json_request_id(QString &str) {
+    this->json_core_request_id = str;
+}
+
 
 /*
  *
@@ -597,8 +618,11 @@ void VPS_ScriptChainBase::add_reply_data(QJsonObject &json_data) {
  *
 */
 
+
 void VPS_Script_Testing::process_reply(QJsonObject *json_data) { //Virtual function called for replies to step script.
     if (json_data) add_reply_data(*json_data); //Add data we got.
+
+    //TODO: Process each step for script.
     switch(this->script_step) {
     default:
         break;
@@ -606,6 +630,6 @@ void VPS_Script_Testing::process_reply(QJsonObject *json_data) { //Virtual funct
         qDebug("We are running the test script fresh.");
         break;
     }
-    //TODO: Process each step for script.
+
     return;
 }
