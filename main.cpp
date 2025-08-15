@@ -43,3 +43,38 @@ int main(int argc, char *argv[])
     QJsonDocument({"d":{"requestId":"GET_SCENE_ITEMS_INFO","requestStatus":{"code":100,"result":true},"requestType":"GetSceneItemList","responseData":{"sceneItems":[{"inputKind":"color_source_v3","isGroup":null,"sceneItemBlendMode":"OBS_BLEND_NORMAL","sceneItemEnabled":true,"sceneItemId":1,"sceneItemIndex":0,"sceneItemLocked":false,"sceneItemTransform":{"alignment":5,"boundsAlignment":0,"boundsHeight":0,"boundsType":"OBS_BOUNDS_NONE","boundsWidth":0,"cropBottom":0,"cropLeft":0,"cropRight":0,"cropToBounds":false,"cropTop":0,"height":1080,"positionX":0,"positionY":0,"rotation":0,"scaleX":1,"scaleY":1,"sourceHeight":1080,"sourceWidth":1920,"width":1920},"sourceName":"Blue","sourceType":"OBS_SOURCE_TYPE_INPUT","sourceUuid":"eeb7a78f-3f43-4160-ab66-b86490f9c18f"},{"inputKind":"color_source_v3","isGroup":null,"sceneItemBlendMode":"OBS_BLEND_NORMAL","sceneItemEnabled":true,"sceneItemId":2,"sceneItemIndex":1,"sceneItemLocked":false,"sceneItemTransform":{"alignment":5,"boundsAlignment":0,"boundsHeight":0,"boundsType":"OBS_BOUNDS_NONE","boundsWidth":0,"cropBottom":0,"cropLeft":0,"cropRight":0,"cropToBounds":false,"cropTop":0,"height":1080,"positionX":0,"positionY":0,"rotation":0,"scaleX":1,"scaleY":1,"sourceHeight":1080,"sourceWidth":1920,"width":1920},"sourceName":"Red","sourceType":"OBS_SOURCE_TYPE_INPUT","sourceUuid":"3c8c777f-2765-454d-b9c6-75a198a522e8"},{"inputKind":"color_source_v3","isGroup":null,"sceneItemBlendMode":"OBS_BLEND_NORMAL","sceneItemEnabled":true,"sceneItemId":3,"sceneItemIndex":2,"sceneItemLocked":false,"sceneItemTransform":{"alignment":5,"boundsAlignment":0,"boundsHeight":0,"boundsType":"OBS_BOUNDS_NONE","boundsWidth":0,"cropBottom":0,"cropLeft":0,"cropRight":0,"cropToBounds":false,"cropTop":0,"height":1080,"positionX":0,"positionY":0,"rotation":0,"scaleX":1,"scaleY":1,"sourceHeight":1080,"sourceWidth":1920,"width":1920},"sourceName":"Green","sourceType":"OBS_SOURCE_TYPE_INPUT","sourceUuid":"55741d4c-cb50-4356-b6c9-55c6353b8b8f"}]}},"op":7})
 
 */
+
+
+
+/*
+ *
+ *
+void mergeJson(QJsonObject& src, const QJsonObject& other)
+{
+    for(auto it = other.constBegin(); it != other.constEnd(); ++it)
+    {
+        if(src.contains(it.key()))
+        {
+            if(src.value(it.key()).isObject() && other.value(it.key()).isObject())
+            {
+                QJsonObject one(src.value(it.key()).toObject());
+                QJsonObject two(other.value(it.key()).toObject());
+
+                mergeJson(one, two);
+                src[it.key()] = one;
+            }
+            else if(src.value(it.key()).isArray() && other.value(it.key()).isArray())
+            {
+                QJsonArray arr = other.value(it.key()).toArray();
+                QJsonArray srcArr = src.value(it.key()).toArray();
+                for(int i = 0; i < arr.size(); i++)
+                    srcArr.append(arr[i]);
+                src[it.key()] = srcArr;
+            }
+        }
+        else
+            src[it.key()] = it.value();
+    }
+}
+
+*/
