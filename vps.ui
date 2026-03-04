@@ -30,13 +30,13 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="ProductionCfg">
        <attribute name="title">
-        <string>Production Configuration</string>
+        <string>Production</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="10,5,1">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="10,1">
         <item>
          <widget class="QFrame" name="frame_5">
           <property name="frameShape">
@@ -45,7 +45,7 @@
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="3">
+          <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0">
            <property name="spacing">
             <number>4</number>
            </property>
@@ -72,10 +72,10 @@
              <widget class="QComboBox" name="comboBox_2">
               <property name="geometry">
                <rect>
-                <x>160</x>
-                <y>10</y>
-                <width>221</width>
-                <height>23</height>
+                <x>50</x>
+                <y>50</y>
+                <width>261</width>
+                <height>31</height>
                </rect>
               </property>
               <item>
@@ -95,11 +95,6 @@
               </item>
               <item>
                <property name="text">
-                <string>Type: SFX</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
                 <string>Group - ???</string>
                </property>
               </item>
@@ -113,9 +108,9 @@
               <property name="geometry">
                <rect>
                 <x>10</x>
-                <y>40</y>
-                <width>371</width>
-                <height>291</height>
+                <y>90</y>
+                <width>431</width>
+                <height>281</height>
                </rect>
               </property>
               <property name="editTriggers">
@@ -158,17 +153,26 @@
               </column>
               <item row="0" column="0">
                <property name="text">
-                <string>123</string>
+                <string>8888</string>
+               </property>
+               <property name="textAlignment">
+                <set>AlignCenter</set>
                </property>
               </item>
               <item row="0" column="1">
                <property name="text">
                 <string>IMG</string>
                </property>
+               <property name="textAlignment">
+                <set>AlignCenter</set>
+               </property>
               </item>
               <item row="0" column="2">
                <property name="text">
                 <string>Intro Video A</string>
+               </property>
+               <property name="textAlignment">
+                <set>AlignCenter</set>
                </property>
               </item>
              </widget>
@@ -178,7 +182,7 @@
                 <x>10</x>
                 <y>10</y>
                 <width>111</width>
-                <height>21</height>
+                <height>31</height>
                </rect>
               </property>
               <property name="font">
@@ -193,10 +197,10 @@
              <widget class="QLabel" name="label_3">
               <property name="geometry">
                <rect>
-                <x>120</x>
-                <y>10</y>
-                <width>81</width>
-                <height>21</height>
+                <x>10</x>
+                <y>50</y>
+                <width>91</width>
+                <height>31</height>
                </rect>
               </property>
               <property name="text">
@@ -206,10 +210,10 @@
              <widget class="QFrame" name="frame_9">
               <property name="geometry">
                <rect>
-                <x>396</x>
-                <y>0</y>
-                <width>641</width>
-                <height>371</height>
+                <x>450</x>
+                <y>10</y>
+                <width>581</width>
+                <height>431</height>
                </rect>
               </property>
               <property name="frameShape">
@@ -250,7 +254,7 @@
                  <x>10</x>
                  <y>30</y>
                  <width>171</width>
-                 <height>331</height>
+                 <height>231</height>
                 </rect>
                </property>
                <item>
@@ -260,7 +264,7 @@
                </item>
                <item>
                 <property name="text">
-                 <string>Names</string>
+                 <string>Hosts</string>
                 </property>
                </item>
                <item>
@@ -295,25 +299,15 @@
                </item>
                <item>
                 <property name="text">
-                 <string>Slide Cards</string>
+                 <string>Directors</string>
                 </property>
                </item>
-              </widget>
-              <widget class="QListView" name="listView">
-               <property name="geometry">
-                <rect>
-                 <x>190</x>
-                 <y>30</y>
-                 <width>171</width>
-                 <height>271</height>
-                </rect>
-               </property>
               </widget>
               <widget class="QLabel" name="label_7">
                <property name="geometry">
                 <rect>
-                 <x>370</x>
-                 <y>0</y>
+                 <x>10</x>
+                 <y>260</y>
                  <width>271</width>
                  <height>31</height>
                 </rect>
@@ -325,8 +319,8 @@
               <widget class="QComboBox" name="comboBox">
                <property name="geometry">
                 <rect>
-                 <x>370</x>
-                 <y>30</y>
+                 <x>10</x>
+                 <y>290</y>
                  <width>261</width>
                  <height>31</height>
                 </rect>
@@ -350,10 +344,10 @@
               <widget class="QLabel" name="label_8">
                <property name="geometry">
                 <rect>
-                 <x>370</x>
-                 <y>130</y>
+                 <x>10</x>
+                 <y>370</y>
                  <width>81</width>
-                 <height>21</height>
+                 <height>31</height>
                 </rect>
                </property>
                <property name="text">
@@ -363,10 +357,10 @@
               <widget class="QComboBox" name="comboBox_3">
                <property name="geometry">
                 <rect>
-                 <x>460</x>
-                 <y>130</y>
-                 <width>171</width>
-                 <height>23</height>
+                 <x>90</x>
+                 <y>370</y>
+                 <width>181</width>
+                 <height>31</height>
                 </rect>
                </property>
                <item>
@@ -375,36 +369,13 @@
                 </property>
                </item>
               </widget>
-              <widget class="QComboBox" name="comboBox_4">
-               <property name="geometry">
-                <rect>
-                 <x>420</x>
-                 <y>80</y>
-                 <width>211</width>
-                 <height>31</height>
-                </rect>
-               </property>
-              </widget>
-              <widget class="QLabel" name="label_9">
-               <property name="geometry">
-                <rect>
-                 <x>370</x>
-                 <y>80</y>
-                 <width>71</width>
-                 <height>31</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Media:</string>
-               </property>
-              </widget>
               <widget class="QPushButton" name="pushButton_7">
                <property name="geometry">
                 <rect>
-                 <x>320</x>
-                 <y>310</y>
-                 <width>41</width>
-                 <height>51</height>
+                 <x>190</x>
+                 <y>200</y>
+                 <width>51</width>
+                 <height>61</height>
                 </rect>
                </property>
                <property name="text">
@@ -414,10 +385,10 @@
               <widget class="QPushButton" name="pushButton_9">
                <property name="geometry">
                 <rect>
-                 <x>190</x>
-                 <y>310</y>
-                 <width>41</width>
-                 <height>51</height>
+                 <x>320</x>
+                 <y>200</y>
+                 <width>51</width>
+                 <height>61</height>
                 </rect>
                </property>
                <property name="text">
@@ -428,9 +399,9 @@
                <property name="geometry">
                 <rect>
                  <x>240</x>
-                 <y>310</y>
-                 <width>71</width>
-                 <height>23</height>
+                 <y>200</y>
+                 <width>81</width>
+                 <height>31</height>
                 </rect>
                </property>
                <property name="text">
@@ -440,24 +411,77 @@
               <widget class="QPushButton" name="pushButton_8">
                <property name="geometry">
                 <rect>
-                 <x>250</x>
-                 <y>340</y>
-                 <width>51</width>
-                 <height>23</height>
+                 <x>240</x>
+                 <y>230</y>
+                 <width>81</width>
+                 <height>31</height>
                 </rect>
                </property>
                <property name="text">
-                <string>X</string>
+                <string>Delete</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_14">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>330</y>
+                 <width>271</width>
+                 <height>31</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Transition Type:</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="comboBox_5">
+               <property name="geometry">
+                <rect>
+                 <x>110</x>
+                 <y>330</y>
+                 <width>161</width>
+                 <height>31</height>
+                </rect>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Cut</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>100ms Fade</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>250ms Fade</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Stinger (Which)</string>
+                </property>
+               </item>
+              </widget>
+              <widget class="QListWidget" name="listWidget_2">
+               <property name="geometry">
+                <rect>
+                 <x>190</x>
+                 <y>30</y>
+                 <width>381</width>
+                 <height>171</height>
+                </rect>
                </property>
               </widget>
              </widget>
              <widget class="QPushButton" name="pushButton_11">
               <property name="geometry">
                <rect>
-                <x>259</x>
-                <y>340</y>
+                <x>320</x>
+                <y>410</y>
                 <width>121</width>
-                <height>23</height>
+                <height>31</height>
                </rect>
               </property>
               <property name="text">
@@ -468,28 +492,60 @@
               <property name="geometry">
                <rect>
                 <x>10</x>
-                <y>340</y>
-                <width>80</width>
-                <height>23</height>
+                <y>410</y>
+                <width>131</width>
+                <height>31</height>
                </rect>
               </property>
               <property name="text">
-               <string>Do SFX</string>
+               <string>Oneshot Media</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_9">
+              <property name="geometry">
+               <rect>
+                <x>350</x>
+                <y>49</y>
+                <width>58</width>
+                <height>31</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>ID:</string>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinBox">
+              <property name="geometry">
+               <rect>
+                <x>370</x>
+                <y>50</y>
+                <width>71</width>
+                <height>31</height>
+               </rect>
+              </property>
+              <property name="maximum">
+               <number>9999</number>
+              </property>
+              <property name="value">
+               <number>9999</number>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="pushButton_13">
+              <property name="geometry">
+               <rect>
+                <x>245</x>
+                <y>10</y>
+                <width>201</width>
+                <height>26</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Reset Filters</string>
               </property>
              </widget>
             </widget>
            </item>
           </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QFrame" name="frame_6">
-          <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Shadow::Raised</enum>
-          </property>
          </widget>
         </item>
         <item>
@@ -568,7 +624,7 @@
         </sizepolicy>
        </property>
        <attribute name="title">
-        <string>Add Media / Manage Groups</string>
+        <string>Upload/Tag Media</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,0,5">
         <property name="sizeConstraint">
@@ -577,7 +633,7 @@
         <item>
          <widget class="QFrame" name="frame">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+           <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -588,53 +644,29 @@
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,1,1,2,1,2,0,10,2,3,0,0">
+          <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,0,1,0,1,1,1,5,0,0,0">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <property name="sizeConstraint">
+            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+           </property>
+           <property name="leftMargin">
+            <number>4</number>
+           </property>
+           <property name="topMargin">
+            <number>4</number>
+           </property>
+           <property name="rightMargin">
+            <number>4</number>
+           </property>
+           <property name="bottomMargin">
+            <number>4</number>
+           </property>
            <item>
             <widget class="QPushButton" name="AMedia">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Select Media</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="BFile">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>File: Example.png</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="CTitle">
-             <property name="text">
-              <string>Title:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="DInput">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -647,25 +679,18 @@
              </property>
              <property name="font">
               <font>
-               <pointsize>13</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="text">
-              <string/>
+              <string>Select Media</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="E">
-             <property name="text">
-              <string>Main Type:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="F1">
+            <widget class="QLabel" name="BFile">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -675,6 +700,98 @@
                <width>0</width>
                <height>0</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>File: Example.png</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="CTitle">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Title:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="DInput">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="E">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Main Type:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="F1">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
              </property>
              <item>
               <property name="text">
@@ -694,55 +811,27 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="F3">
-             <property name="text">
-              <string>Expires at date:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCalendarWidget" name="G_2">
+            <widget class="QPushButton" name="pushButton_14">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="minimumDate">
-              <date>
-               <year>2000</year>
-               <month>1</month>
-               <day>1</day>
-              </date>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
              </property>
-             <property name="maximumDate">
-              <date>
-               <year>3999</year>
-               <month>12</month>
-               <day>31</day>
-              </date>
-             </property>
-             <property name="firstDayOfWeek">
-              <enum>Qt::DayOfWeek::Sunday</enum>
-             </property>
-             <property name="gridVisible">
-              <bool>true</bool>
-             </property>
-             <property name="horizontalHeaderFormat">
-              <enum>QCalendarWidget::HorizontalHeaderFormat::ShortDayNames</enum>
-             </property>
-             <property name="navigationBarVisible">
-              <bool>true</bool>
-             </property>
-             <property name="dateEditEnabled">
-              <bool>true</bool>
+             <property name="text">
+              <string>Set Expiration Date</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="H_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -753,6 +842,11 @@
                <height>0</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Add Media</string>
              </property>
@@ -760,6 +854,12 @@
            </item>
            <item>
             <spacer name="I">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="orientation">
               <enum>Qt::Orientation::Vertical</enum>
              </property>
@@ -776,6 +876,17 @@
            </item>
            <item>
             <widget class="QLabel" name="label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Upload Progress:</string>
              </property>
@@ -786,8 +897,34 @@
            </item>
            <item>
             <widget class="QProgressBar" name="progressBar">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="value">
               <number>24</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_15">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Content ID: 8888 - Example.png</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -803,13 +940,19 @@
         </item>
         <item>
          <widget class="QFrame" name="frame_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="frameShape">
            <enum>QFrame::Shape::StyledPanel</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,3,1,2,3,18">
+          <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,3,10,1,2,2,7">
            <item>
             <widget class="QLabel" name="A0">
              <property name="sizePolicy">
@@ -892,9 +1035,48 @@
             </widget>
            </item>
            <item>
+            <widget class="QTableWidget" name="tableWidget">
+             <row>
+              <property name="text">
+               <string>New Row</string>
+              </property>
+             </row>
+             <column>
+              <property name="text">
+               <string>ID ####</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Tags</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Name</string>
+              </property>
+             </column>
+             <item row="0" column="0">
+              <property name="text">
+               <string>8888</string>
+              </property>
+             </item>
+             <item row="0" column="1">
+              <property name="text">
+               <string>Slides</string>
+              </property>
+             </item>
+             <item row="0" column="2">
+              <property name="text">
+               <string>Example.png</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="label">
              <property name="text">
-              <string>Edit Group / Tab:</string>
+              <string>Edit Group / Tag:</string>
              </property>
             </widget>
            </item>
@@ -909,52 +1091,25 @@
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_4">
-             <property name="frameShape">
-              <enum>QFrame::Shape::StyledPanel</enum>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="frameShadow">
-              <enum>QFrame::Shadow::Raised</enum>
+             <property name="text">
+              <string>Remove Group / Tag</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0">
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <property name="sizeConstraint">
-               <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-              </property>
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>4</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>4</number>
-              </property>
-              <item>
-               <widget class="QPushButton" name="pushButton_3">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Remove Group / Tag</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </widget>
            </item>
            <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -971,7 +1126,7 @@
       </widget>
       <widget class="QWidget" name="MediaMgr">
        <attribute name="title">
-        <string>Media Manager</string>
+        <string>Media Configuration</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="OBSCfg">
@@ -1078,9 +1233,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>320</y>
+          <y>330</y>
           <width>371</width>
-          <height>291</height>
+          <height>281</height>
          </rect>
         </property>
        </widget>
@@ -1088,9 +1243,9 @@
         <property name="geometry">
          <rect>
           <x>680</x>
-          <y>320</y>
+          <y>330</y>
           <width>371</width>
-          <height>291</height>
+          <height>281</height>
          </rect>
         </property>
        </widget>
@@ -1098,9 +1253,9 @@
         <property name="geometry">
          <rect>
           <x>390</x>
-          <y>320</y>
+          <y>330</y>
           <width>281</width>
-          <height>291</height>
+          <height>281</height>
          </rect>
         </property>
         <property name="html">
@@ -1118,9 +1273,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>30</y>
+          <y>40</y>
           <width>1041</width>
-          <height>271</height>
+          <height>261</height>
          </rect>
         </property>
        </widget>
@@ -1129,8 +1284,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>201</width>
-          <height>18</height>
+          <width>101</width>
+          <height>31</height>
          </rect>
         </property>
         <property name="text">
@@ -1143,7 +1298,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
           <x>10</x>
           <y>300</y>
           <width>141</width>
-          <height>18</height>
+          <height>31</height>
          </rect>
         </property>
         <property name="text">
@@ -1156,7 +1311,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
           <x>390</x>
           <y>300</y>
           <width>58</width>
-          <height>18</height>
+          <height>31</height>
          </rect>
         </property>
         <property name="text">
@@ -1169,7 +1324,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
           <x>680</x>
           <y>300</y>
           <width>141</width>
-          <height>18</height>
+          <height>31</height>
          </rect>
         </property>
         <property name="text">

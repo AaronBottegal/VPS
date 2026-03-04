@@ -23,7 +23,8 @@ VPS::VPS(QWidget *parent)
 
     //Other stuff.
     outfile.setFileName("websocket.txt");
-    outfile.open(QIODevice::Append | QIODevice::Text); //Open as text.
+    if (outfile.open(QIODevice::Append | QIODevice::Text))
+        qDebug() << "Failed to open outfile of OBS replies.\n"; //Open as text.
 
     //qDebug("Clicking button...");
     //on_BTN_Connect_clicked(); //Click button automagically.
@@ -34,7 +35,7 @@ VPS::~VPS()
     //Deconstruct.
     if (outfile.isOpen()) {
         outfile.flush();
-        outfile.close(); //Close file.
+        outfile.close(); //Close file when deconstructing.
     }
 
     delete ui; //Free UI.
@@ -119,8 +120,13 @@ void VPS::process_websock_data(QJsonDocument &doc)
         QByteArray auth_send;
 
         //Gather from incoming.
-        salt = obj["d"].toObject()["authentication"].toObject()["salt"].toString();
-        challenge = obj["d"].toObject()["authentication"].toObject()["challenge"].toString();
+        salt = obj.value("d").toObject().value("authentication").toObject().value("salt").toString();
+        challenge = obj.value("d")
+                        .toObject()
+                        .value("authentication")
+                        .toObject()
+                        .value("challenge")
+                        .toString();
         //Straight text to data byte conversions.
         salt_utf8 = salt.toUtf8();
         challenge_utf8 = challenge.toUtf8();
@@ -276,11 +282,12 @@ void VPS::process_websock_data(QJsonDocument &doc)
         break;
     }
     case 7: { //Reply from request.
-        QString recv_request_name = obj["d"].toObject()["requestId"].toString(); //Get string.
+        QString recv_request_name
+            = obj.value("d").toObject().value("requestId").toString(); //Get string.
         //Find virtual function to pass to.
 
         //Send it to the script runner.
-        for (const auto &ptr : active_scripts) {
+        for (auto &ptr : std::as_const(active_scripts)) {
             if (ptr->script_name_id == recv_request_name) ptr->process_reply(&obj);
         }
 
