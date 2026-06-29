@@ -62,6 +62,8 @@ void VPS::onError(QAbstractSocket::SocketError err)
 void VPS::msgrecv(const QString &msg)
 {
     //qDebug().noquote() << "MESSAGE NORML: " << msg;                  //Show msg.
+    ui->TXT_DEBUG_RECV->append(msg);
+
     QJsonDocument json_data = QJsonDocument::fromJson(msg.toUtf8()); //Turn it in to data.
 
     VPS::process_websock_data(json_data);
@@ -75,7 +77,10 @@ void VPS::msgrecv(const QString &msg)
 void VPS::framerecv(const QString &msg, bool fin)
 {
     qDebug() << "MESSAGE FRAME: " << msg;
-    if (fin) return;
+    ui->TXT_DEBUG_RECV->append(msg);
+
+    if (fin)
+        return;
 
     return;
 }
