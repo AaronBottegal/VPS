@@ -2,10 +2,12 @@
 #define VPS_H
 
 #include <QAbstractSocket>
-#include <QMainWindow>
-#include <QString>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMainWindow>
+#include <QString>
+#include <QTimer>
+#include <QWebSocket>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -13,17 +15,19 @@ class VPS;
 }
 QT_END_NAMESPACE
 
-
-
-class VPS_ScriptChainBase {
+class VPS_ScriptChainBase
+{
 public:
-    VPS_ScriptChainBase(); //Init.
-    ~VPS_ScriptChainBase(); //Destroy.
+    VPS_ScriptChainBase();          //Init.
+    virtual ~VPS_ScriptChainBase(); //Destroy.
+
     //Variables.
+    bool waiting_for_reply; //Wait for OBS data back.
     QString script_name_id; //ID Name given to OBS for reply.
     void add_name(QString str);
-    quint32 script_step; //Step we're at in the script process runner.
-    QVector<QJsonObject> script_past_data; //Past data packets we processed/requested for reference later in the script.
+    qint32 script_step = 0; //Step we're at in the script process runner.
+    QVector<QJsonObject>
+        script_past_data; //Past data packets we processed/requested for reference later in the script.
     //For making JSON Objects.
     QJsonDocument json_doc; //Document maker.
     //JSON Structure for the core node: {op:int,d:obj_data}
@@ -32,7 +36,8 @@ public:
     quint8 json_core_op; //Op int value.
     QString json_core_request_id;
     QString json_core_request_type;
-    QJsonObject json_request_attrs; //Under "d" in core of packet, contains "requestType", "requestId", and optional request data.
+    QJsonObject
+        json_request_attrs; //Under "d" in core of packet, contains "requestType", "requestId", and optional request data.
     QJsonObject json_request_data; //Request data under "requestData" that changes per-command.
     //JSON Functions
     void set_json_op_id(quint8 val);
@@ -41,20 +46,22 @@ public:
     //Virtual function for processing replies.
     virtual void process_reply(QJsonObject *json_object) = 0; //Pure virtual function spec.
 protected:
-    void add_reply_data(QJsonObject &json_object);    //Internal function for adding JSON Data for this script invokation.
+    void add_reply_data(
+        QJsonObject &json_object); //Internal function for adding JSON Data for this script invokation.
+
 private:
 };
 
-
-
-class VPS_Script_Testing : public VPS_ScriptChainBase {
+class VPS_Script_Testing : public VPS_ScriptChainBase
+{
 public:
+    VPS_Script_Testing();                                  //Constructor
+    ~VPS_Script_Testing();                                 //Deconstructor.
     void process_reply(QJsonObject *json_object) override; //Script runner we link to.
+
 protected:
 private:
 };
-
-
 
 class VPS : public QMainWindow
 {
@@ -63,11 +70,12 @@ class VPS : public QMainWindow
 public:
     VPS(QWidget *parent = nullptr);
     ~VPS();
-    //Our internal crap.
+
     void OBS_Create_New_Scene();
     void OBS_Fetch_Input_Kind_Defaults(); //Get defaults info for each kind.
-
+    void OBS_verification(QJsonObject dobj); //Internal OBS handling stuff.
 public slots:
+    void timed_script_check();
     void onConnected();
     void onDisconnected();
     void onError(QAbstractSocket::SocketError err);
@@ -87,8 +95,13 @@ private slots:
 
 private:
     Ui::VPS *ui;
+    //Our internal crap.
+    QTimer check_script_timer;
+    bool disable_timed_check = false, wait_for_obs_reply = false;
 };
 
+extern QVector<VPS_ScriptChainBase *> active_scripts;
+extern QWebSocket obs;
 extern QString NEW_SCENE_ID;
 
 #endif // VPS_H

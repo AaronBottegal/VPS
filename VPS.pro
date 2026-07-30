@@ -10,7 +10,8 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    vps.cpp
+    vps.cpp \
+    vps_obs.cpp
 
 HEADERS += \
     vps.h
@@ -22,3 +23,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    OBSPacketsExamples.txt
