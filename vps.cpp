@@ -5,13 +5,16 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QString>
 #include <QTimer>
 #include <QWebSocket>
 #include "ui_vps.h"
+#include "vps.h"
+#include "vps_script_testing.h" //We make this one, need info.
 
 QFile outfile;
 QWebSocket obs;
-QVector<VPS_ScriptChainBase *> active_scripts;
+QVector<VPS_Scripts_Base *> active_scripts;
 //TODO: Watcher array for re-activating scripts on events.
 
 VPS::VPS(QWidget *parent)
@@ -21,9 +24,12 @@ VPS::VPS(QWidget *parent)
     ui->setupUi(this);
 
     //Other stuff.
-    outfile.setFileName("websocket.txt");
-    if (outfile.open(QIODevice::Append | QIODevice::Text))
-        qDebug() << "Failed to open outfile of OBS replies.\n"; //Open as text.
+
+    //Websocket log of send.
+    outfile.setFileName("websocket_log.txt");
+    if (outfile.open(QIODevice::Append | QIODevice::Text) == false) {
+        qDebug() << "Failed to open outfile of OBS replies.\n";
+    }
 
     //qDebug("Clicking button...");
     //on_BTN_Connect_clicked(); //Click button automagically.
@@ -67,9 +73,9 @@ void VPS::onError(QAbstractSocket::SocketError err)
     qDebug() << "WEBSOCK ERROR:" << err;
 }
 
-void VPS::msgrecv(const QString &msg)
+void VPS::msgrecv(const QString &msg) //Whole message, not using, works fine.
 {
-    //qDebug().noquote() << "MESSAGE NORML: " << msg;                  //Show msg.
+    qDebug().noquote() << "OBS MESSAGE: " << msg; //Show msg.
     ui->TXT_DEBUG_RECV->append(msg);
 
     QJsonDocument json_data = QJsonDocument::fromJson(msg.toUtf8()); //Turn it in to data.
@@ -77,18 +83,44 @@ void VPS::msgrecv(const QString &msg)
     VPS::process_websock_data(json_data);
 
     QTextStream helper(&outfile); //Set up streamer.
-    helper << msg << "\n\n";      //Output data to it.
+    helper << "JSON Recv: \n" << msg << "\n\n"; //Output data to it.
 
     return;
 }
 
 void VPS::framerecv(const QString &msg, bool fin)
 {
-    qDebug() << "MESSAGE FRAME: " << msg;
-    ui->TXT_DEBUG_RECV->append(msg);
+    static QString frame_recv_buf;
 
-    if (fin)
-        return;
+    qDebug().noquote() << "OBS MESSAGE FRAME:" << msg;
+
+    frame_recv_buf.append(msg);
+
+    if (fin) {
+        ui->TXT_DEBUG_RECV->append(frame_recv_buf); //Append to buffer.
+        QJsonDocument json_data = QJsonDocument::fromJson(
+            frame_recv_buf.toUtf8()); //Turn it in to json data type.
+
+        VPS::process_websock_data(json_data); //Process it.
+
+        outfile.write(frame_recv_buf.toUtf8()); //Write data out.
+        outfile.write(QString("\n").toUtf8());  //Add new line.
+
+        frame_recv_buf.clear(); //No more text.
+    }
+
+    return;
+}
+
+void VPS::OBS_Send_Request_Simple(QString msg)
+{
+    //Add to UI.
+    ui->TXT_DEBUG_SEND->append(msg);
+    ui->TXT_DEBUG_SEND->append("\n"); //Spaces between.
+
+    //Send to socket.
+    obs.sendTextMessage(msg); //Send over socket.
+    obs.flush();              //Make sure it is sent. Optional, test without too randomly.
 
     return;
 }
@@ -104,17 +136,23 @@ void VPS::timed_script_check()
     //Check scripts here.
     for (auto it = active_scripts.begin(); it != active_scripts.end();) {
         if ((*it)->script_step == -1) {
+            qDebug() << "Script completed!";
             delete *it;
             it = active_scripts.erase(it); //Take out of scripts.
             continue;                      //Skip to next.
         }
 
-        if ((*it)->waiting_for_reply == true) //Leave if waiting.
+        if ((*it)->waiting_for_reply == true) { //Leave if waiting, will come via socket.
+            it++;                               //To next script iterator.
             continue;
+        }
 
-        (*it)->process_reply(NULL); //Run step otherwise.
+        QJsonDocument ret_doc = (*it)->process_reply(NULL); //Run step manually otherwise.
 
-        it++; //Next iterator.
+        if (!ret_doc.isEmpty()) //Send the document returned to OBS if given one.
+            OBS_Send_Request_Simple(ret_doc.toJson(QJsonDocument::Compact));
+
+        it++; //Next script iterator.
     };
 
     return;
@@ -139,10 +177,6 @@ void VPS::process_websock_data(QJsonDocument &doc)
 
     //Tell us.
     qDebug().noquote() << "Data op: " << data_op;
-
-    if (data_op >= 3) {
-        qDebug() << "Op GTE 3:";
-    }
 
     //Process data op
     switch (data_op) {
@@ -175,14 +209,22 @@ void VPS::process_websock_data(QJsonDocument &doc)
     }
     case 7: { //Reply from request.
         //Send reply to script.
-        QString recv_request_type_name
-            = obj.value("d").toObject().value("requestType").toString(); //Get script name.
-        QString recv_request_id = obj.value("d").toObject().value("requestId").toString(); //Get ID.
+        QString recv_request_id
+            = obj.value("d").toObject().value("requestId").toString(); //Get ID of script.
 
         //Send it to the script runner.
         for (auto &ptr : std::as_const(active_scripts)) {
-            if (ptr->script_name_id == recv_request_type_name)
-                ptr->process_reply(&obj);
+            QJsonDocument reply_data;
+            if (ptr->waiting_for_reply == false)
+                continue;                                         //Not waiting for reply, bail.
+            if (ptr->script_id.toString(QUuid::WithoutBraces)
+                == recv_request_id) {                             //This script sent it.
+                ptr->waiting_for_reply = false;                   //Not anymore.
+                reply_data = ptr->process_reply(&doc);            //Process the reply in it.
+                if (!reply_data.isEmpty())
+                    OBS_Send_Request_Simple(
+                        reply_data.toJson(QJsonDocument::Compact)); //Send the reply to OBS.
+            }
         }
 
         //Done.
@@ -216,12 +258,13 @@ void VPS::on_BTN_Connect_clicked()
     url.setScheme("ws"); //We're websocket.
 
     qDebug("Connect signal for connect/disconnect...");
-    connect(&obs, SIGNAL(connected()), this, SLOT(onConnected()));
-    connect(&obs, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(&obs, &QWebSocket::connected, this, &VPS::onConnected);
+    connect(&obs, &QWebSocket::disconnected, this, &VPS::onDisconnected);
     //connect(&obs, SIGNAL(errorOccured(err)), this, SLOT(onError(err)));
+
     qDebug("Connect signal for text receive from obs server...");
-    connect(&obs, SIGNAL(textMessageReceived(QString)), this, SLOT(msgrecv(QString)));
-    //connect(&obs, SIGNAL(textFrameReceived(QString, bool)), this, SLOT(framerecv(QString, bool)));
+    //connect(&obs, SIGNAL(textMessageReceived(QString)), this, SLOT(msgrecv(QString)));
+    connect(&obs, &QWebSocket::textFrameReceived, this, &VPS::framerecv);
 
     qDebug() << obs.error();
     obs.open(url); //Open URL.
@@ -230,6 +273,13 @@ void VPS::on_BTN_Connect_clicked()
     qDebug() << "Trying to connect...";
 
     return;
+}
+
+
+void VPS::on_BTN_SCENE1_clicked()
+{ //Scene 1
+    //Create next scene.
+    OBS_Create_New_Scene();
 }
 
 QString NEW_SCENE_ID;
@@ -265,8 +315,7 @@ void VPS::OBS_Create_New_Scene()
     QString packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-    obs.flush();
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     //Create packet here.
     obj_root.empty();
@@ -290,8 +339,7 @@ void VPS::OBS_Create_New_Scene()
     packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-    obs.flush();
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     //Create packet here.
     obj_root.empty();
@@ -316,8 +364,7 @@ void VPS::OBS_Create_New_Scene()
     packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-    obs.flush();
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     //Create packet here.
     obj_root.empty();
@@ -342,8 +389,7 @@ void VPS::OBS_Create_New_Scene()
     packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-    obs.flush();
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     //Create packet here.
     obj_root.empty();
@@ -368,8 +414,7 @@ void VPS::OBS_Create_New_Scene()
     packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-    obs.flush();
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     //Add data for op d key.
     obj_data["requestType"] = "SetCurrentPreviewScene";
@@ -388,8 +433,7 @@ void VPS::OBS_Create_New_Scene()
     packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-    obs.flush();                 //Flush it.
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     //Create packet here.
     obj_root.empty();
@@ -412,15 +456,9 @@ void VPS::OBS_Create_New_Scene()
     packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     return;
-}
-
-void VPS::on_BTN_SCENE1_clicked()
-{ //Scene 1
-    //Create next scene.
-    OBS_Create_New_Scene();
 }
 
 void VPS::on_BTN_GET_BG_clicked()
@@ -452,8 +490,7 @@ void VPS::on_BTN_GET_BG_clicked()
     QString packet = auth_doc.toJson(QJsonDocument::Compact);
 
     //Send it!
-    obs.sendTextMessage(packet); //Send the data.
-    obs.flush();
+    OBS_Send_Request_Simple(packet); //Send the data.
 
     //Create packet here.
     obj_root.empty();
@@ -466,91 +503,176 @@ void VPS::on_BTN_OTHER_clicked()
     //Do information gathering.
 }
 
-/*
- *
- * SCRIPT BASE CLASS.
- *
-*/
+void VPS::OBS_verification(QJsonObject dobj)
+{ //Internal OBS handling stuff.
+    //Op fetch.
+    int data_op;
+    if (dobj.contains("op"))
+        data_op = dobj.value("op").toInt();
+    else
+        return; //Failure, need type.
 
+    //Tell us.
+    qDebug().noquote() << "Data op in OBS Verify: " << data_op;
 
-VPS_ScriptChainBase::VPS_ScriptChainBase() {
-    //Add to running scripts.
-    this->script_step = 0;  //No steps.
-    this->waiting_for_reply = false;
-    //active_scripts.push_back(this); //Add self to list.
-    return;
-}
-
-
-VPS_ScriptChainBase::~VPS_ScriptChainBase() {
-    //Remove from running scripts.
-    //active_scripts.removeAll(this); //Remove from active scripts.
-    return;
-}
-
-//Generic base class features.
-
-void VPS_ScriptChainBase::add_name(QString str) {
-    this->script_name_id = str; //Copy ref.
-}
-
-void VPS_ScriptChainBase::add_reply_data(QJsonObject &json_data) {
-    //TODO: Add data to self.
-    this->script_past_data.push_back(json_data); //Add data to it.
-    //TODO: Get rid of header reply value portion.
-    return;
-};
-
-void VPS_ScriptChainBase::set_json_op_id(quint8 val) {
-    this->json_core_op = val;
-    return;
-}
-
-void VPS_ScriptChainBase::set_json_request_type(QString &str) {
-    this->json_core_request_type = str;
-}
-
-
-void VPS_ScriptChainBase::set_json_request_id(QString &str) {
-    this->json_core_request_id = str;
-}
-
-
-/*
- *
- * SCRIPT RUNNERS / DERIVED CLASSES
- *
-*/
-
-VPS_Script_Testing::VPS_Script_Testing()
-{
-    //No extras.
-    return;
-}
-
-VPS_Script_Testing::~VPS_Script_Testing()
-{
-    //No extras to delete.
-    return;
-}
-
-void VPS_Script_Testing::process_reply(QJsonObject *json_data) { //Virtual function called for replies to step script.
-    if (json_data) add_reply_data(*json_data); //Add data we got.
-
-    //TODO: Process each step for script.
-    switch(this->script_step) {
-    case 0:
-        qDebug("We are running the test script fresh.");
-        break;
-    default:
-        qDebug("We have removed the test script!");
-        this->script_step = -1; //Destroying value.
-        return;
+    if (data_op >= 3) {
+        qDebug() << "OBS Verify: Verify GTE 3";
     }
 
-    this->script_step++; //Next script step always.
+    switch (data_op) {
+    case 0: {
+        //Packet 0, auth to.
+        //Auth packet.
+        QString salt;
+        QString challenge;
+        QByteArray salt_utf8;
+        QByteArray challenge_utf8;
+        //QByteArray salt_hex;
+        //QByteArray challenge_hex;
+        QCryptographicHash hash(QCryptographicHash::Sha256);
+        QByteArray hash_data;
+        QByteArray secret_base64;
+        QByteArray secret_hex;
+        QByteArray auth_send;
 
-    return;
+        //Gather from incoming.
+        salt = dobj.value("d").toObject().value("authentication").toObject().value("salt").toString();
+        challenge = dobj.value("d")
+                        .toObject()
+                        .value("authentication")
+                        .toObject()
+                        .value("challenge")
+                        .toString();
+        //Straight text to data byte conversions.
+        salt_utf8 = salt.toUtf8();
+        challenge_utf8 = challenge.toUtf8();
+
+        qDebug() << "Hashing data points: " << ui->obs_pw->text().toUtf8()
+                 << "Salt: " << salt.toUtf8() << "Challenge: " << challenge.toUtf8();
+
+        hash_data.append(ui->obs_pw->text().toUtf8());
+        hash_data.append(salt_utf8);
+        hash.addData(hash_data); //Add password and salt first first.
+
+        //Get result as base64.
+        secret_hex = hash.result();
+        secret_base64 = hash.result().toBase64(); //Copy base64 secret.
+
+        //Reset hash data.
+        hash.reset(); //Reset data.
+
+        //Now add the challenge after the base64 secret.
+        hash_data.clear();               //Clear combiner.
+        hash_data.append(secret_base64); //Add Base64 and challenge.
+        hash_data.append(challenge_utf8);
+        hash.addData(hash_data); //Hash it.
+
+        auth_send = hash.result().toBase64(
+            QByteArray::Base64Encoding); //Final challenge hash to base64 as auth code.
+        QString auth_stringed(auth_send);
+
+        //Create auth packet here.
+        QJsonDocument auth_doc;
+        QJsonObject obj_root;
+        QJsonObject obj_data;
+
+        //Add data for op d key.
+        obj_data["authentication"] = auth_stringed; //Auth string.
+        obj_data["eventSubscriptions"] = 255;       //No events subscribed to.
+        obj_data["rpcVersion"] = 1;                 //RPC Version.
+
+        //Now combine to form the document.
+        obj_root["d"] = obj_data; //D key as data object for op packet.
+        obj_root["op"] = 1;       //Set op on root.
+        auth_doc.setObject(obj_root);
+
+        //Make packet from doc.
+        QString packet = auth_doc.toJson(QJsonDocument::Compact);
+
+        //Send it!
+        OBS_Send_Request_Simple(packet); //Send the data.
+    } break;
+    case 2: {
+        //Auth okay.
+        qDebug("OBS Verify: AUTH OK");
+        //Add script runner for testing.
+        VPS_Script_Testing *script_adding = new VPS_Script_Testing; //Make the script we want ran.
+        //Add it to active scripts.
+        active_scripts.push_back(script_adding); //Push as active.
+
+        //Shoot off packets for data back.
+
+        //Create packet here.
+        /*
+        QJsonDocument auth_doc;
+        QJsonObject obj_root;
+        QJsonObject obj_data;
+        QJsonObject request_data;
+        */
+
+        /*
+        //Add data for op d key.
+        obj_data["requestType"] = "GetInputList";
+        obj_data["requestId"] = "N/A";
+        if (!request_data.isEmpty())
+            obj_data["requestData"] = request_data; //Add if not empty.
+
+        //Now combine to form the document.
+        obj_root["d"] = obj_data; //D key as data object for op packet.
+        obj_root["op"] = 6;       //Set op for request.
+        auth_doc.setObject(obj_root);
+
+        //Make packet from doc.
+        QString packet = auth_doc.toJson(QJsonDocument::Compact);
+
+        //Send it!
+        OBS_Send_Request_Simple(packet); //Send the data.
+
+        //Create packet here.
+        obj_root.empty();
+        obj_data.empty();
+        request_data.empty();
+
+        //Add data for op d key.
+        obj_data["requestType"] = "GetInputKindList";
+        obj_data["requestId"] = "N/A";
+        if (!request_data.isEmpty())
+            obj_data["requestData"] = request_data; //Add if not empty.
+
+        //Now combine to form the document.
+        obj_root["d"] = obj_data; //D key as data object for op packet.
+        obj_root["op"] = 6;       //Set op for request.
+        auth_doc.setObject(obj_root);
+
+        //Make packet from doc.
+        packet = auth_doc.toJson(QJsonDocument::Compact);
+
+        //Send it!
+        OBS_Send_Request_Simple(packet); //Send the data.
+
+        //Create packet here.
+        obj_root.empty();
+        obj_data.empty();
+        request_data.empty();
+
+        //Add data for op d key.
+        obj_data["requestType"] = "GetInputSettings";
+        obj_data["requestId"] = "VCAP";
+        request_data["inputName"] = "Video Capture Device";
+        if (!request_data.isEmpty())
+            obj_data["requestData"] = request_data; //Add if not empty.
+
+        //Now combine to form the document.
+        obj_root["d"] = obj_data; //D key as data object for op packet.
+        obj_root["op"] = 6;       //Set op for request.
+        auth_doc.setObject(obj_root);
+
+        //Make packet from doc.
+        packet = auth_doc.toJson(QJsonDocument::Compact);
+
+        //Send it!
+        OBS_Send_Request_Simple(packet); //Send the data
+        */
+    } break;
+    }
 }
-
-#include "vps_obs.cpp"

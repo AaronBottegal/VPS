@@ -11,10 +11,15 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     vps.cpp \
-    vps_obs.cpp
+    vps_helpers.cpp \
+    vps_script_testing.cpp \
+    vps_scripts_base.cpp
 
 HEADERS += \
-    vps.h
+    vps.h \
+    vps_helpers.h \
+    vps_script_testing.h \
+    vps_scripts_base.h
 
 FORMS += \
     vps.ui
